@@ -4,43 +4,68 @@
 <meta charset="UTF-8">
 <title>Un moment spécial 💙</title>
 <style>
+* { box-sizing: border-box; }
+
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background: radial-gradient(circle at top, #0b3c5d, #020b18);
-    overflow: hidden;
     color: white;
-}
-
-/* ================= COMPTE A REBOURS ================= */
-#countdownBox {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 4em;
-    color: #ff5555;
-    text-shadow: 3px 3px #000;
-    z-index: 20;
-}
-
-/* ================= PAGE ACCUEIL ================= */
-#home {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
     overflow: hidden;
 }
 
-#adeola {
-    font-size: 8em;
+/* ================= UTILS ================= */
+.hidden { display: none; }
+
+.fade-in {
+    animation: fadeIn 1.8s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= START OVERLAY ================= */
+#startOverlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #0b3c5d, #020b18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
     text-align: center;
-    color: #ff0000;
-    text-shadow: 4px 4px #000;
+}
+
+#startOverlay button {
+    background: #1e90ff;
+    border: none;
+    color: white;
+    padding: 18px 35px;
+    border-radius: 40px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* ================= COUNTDOWN ================= */
+#countdownPage {
     position: absolute;
-    top: 30%;
-    width: 100%;
-    z-index: 10;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#countdownBox {
+    max-width: 500px;
+}
+
+#countdownTimer {
+    font-size: 3em;
+    margin-top: 15px;
+    letter-spacing: 2px;
 }
 
 /* ================= COEURS ================= */
@@ -122,7 +147,7 @@ body {
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 1s ease;
+    transition: opacity 1.2s ease;
     text-align: center;
 }
 
@@ -131,87 +156,127 @@ body {
     pointer-events: auto;
 }
 
-.scene img, .scene video {
+.media {
     max-width: 80%;
     max-height: 45vh;
     border-radius: 20px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+}
+
+.scene p {
+    font-size: 1.3em;
+    text-align: center;
+    max-width: 700px;
+    line-height: 1.7;
 }
 
 .scene button {
-    margin-top: 20px;
-    padding: 12px 30px;
-    border-radius: 30px;
-    font-size: 18px;
-    background: #ff5555;
+    margin-top: 30px;
+    background: #1e90ff;
     border: none;
+    padding: 14px 35px;
+    border-radius: 30px;
     color: white;
+    font-size: 16px;
     cursor: pointer;
 }
 </style>
 </head>
 <body>
 
-<div id="countdownBox"></div>
-<div id="home">
-    <div id="adeola">ADEOLA 💙</div>
-</div>
-<div id="hearts-container"></div>
-
 <!-- ================= AUDIO ================= -->
 <audio id="waitingMusic" loop>
     <source src="music/beautiful-colors.mp3" type="audio/mpeg">
 </audio>
+
 <audio id="mainMusic" loop>
     <source src="music/raindance.mp3" type="audio/mpeg">
 </audio>
 
-<!-- ================= SCENES ================= -->
-<div id="scenes">
-    <div class="scene active">
-        <img src="media/scene1.jpg">
-        <p>Prête pour un voyage spécial ? 💙</p>
-        <button onclick="nextScene()">Passer</button>
-    </div>
-    <div class="scene">
-        <video src="media/scene2.mov" controls></video>
-        <p>Parmi des millions de chemins, Allah a voulu que les nôtres se croisent.</p>
-        <button onclick="nextScene()">Passer</button>
-    </div>
-    <div class="scene">
-        <video src="media/scene3.mov" controls></video>
-        <p>Chaque souvenir est un trésor 💖</p>
-        <button onclick="nextScene()">Passer</button>
-    </div>
-    <div class="scene">
-        <img src="media/scene4.mov">
-        <p>Mon affection pour toi est sincère 💘</p>
-        <button onclick="nextScene()">Passer</button>
-    </div>
-    <div class="scene">
-        <img src="media/scene5.jpg">
-        <p>Qu’Allah t’accorde une longue vie et illumine ton chemin ✨</p>
+<!-- ================= START OVERLAY ================= -->
+<div id="startOverlay">
+    <div>
+        <h1>💙</h1>
+        <p>Touche l’écran pour commencer</p>
+        <button onclick="startExperience()">Commencer</button>
     </div>
 </div>
 
+<!-- ================= COUNTDOWN ================= -->
+<div id="countdownPage" class="hidden">
+    <div id="countdownBox" class="fade-in">
+        <h1>Un moment spécial arrive… 💫</h1>
+        <p>Prépare-toi, Adé pense très fort à toi…</p>
+        <div id="countdownTimer"></div>
+    </div>
+</div>
+
+<!-- ================= COEURS ================= -->
+<div id="hearts-container"></div>
+
+<!-- ================= SCENES ================= -->
+<div id="scenes">
+<div class="scene active">
+    <img class="media" src="media/scene1.jpg">
+    <p>Prête pour un voyage spécial ?<br><i>A journey written with love… luv u 💙</i></p>
+    <button onclick="nextScene()">Passer</button>
+</div>
+<div class="scene">
+    <video class="media" src="media/scene2.mov" controls></video>
+    <p>Parmi des millions de chemins,<br>Allah a voulu que les nôtres se croisent.<br><i>It was written.</i></p>
+    <button onclick="nextScene()">Passer</button>
+</div>
+<div class="scene">
+    <video class="media" src="media/scene3.mov" controls></video>
+    <p>Chaque souvenir est un trésor.<br><i>Memories that live forever.</i></p>
+    <button onclick="nextScene()">Passer</button>
+</div>
+<div class="scene">
+    <img class="media" src="media/scene4.mov">
+    <p>Mon affection pour toi est sincère.<br><i>I care about you more than words can say.</i></p>
+    <button onclick="nextScene()">Passer</button>
+</div>
+<div class="scene">
+    <img class="media" src="media/scene5.jpg">
+    <p>
+        Qu’Allah t’accorde une longue vie dans Son obéissance,<br>
+        qu’Il apaise ton cœur et illumine ton chemin.<br><br>
+        <b>Amine.</b><br>
+        <i>May Allah protect you always.</i><br><br>
+        — <b>Adéwalé 💙</b>
+    </p>
+</div>
+</div>
+
 <script>
-// ================= COMPTE A REBOURS =================
+// ================= VARIABLES =================
 const birthday = new Date("2026-02-04T00:00:00");
-const countdownBox = document.getElementById("countdownBox");
+const overlay = document.getElementById("startOverlay");
+const countdownPage = document.getElementById("countdownPage");
+const countdownTimer = document.getElementById("countdownTimer");
 const scenes = document.getElementById("scenes");
 const waitingMusic = document.getElementById("waitingMusic");
 const mainMusic = document.getElementById("mainMusic");
-
 let sceneIndex = 0;
+const sceneEls = document.querySelectorAll(".scene");
+
+// ================= FONCTIONS =================
+function startExperience() {
+    overlay.style.display = "none";
+    waitingMusic.play().catch(()=>{});
+    countdownPage.classList.remove("hidden");
+    updateCountdown();
+    createHearts();
+    createBackgroundHearts();
+}
 
 function updateCountdown() {
     const now = new Date();
     const diff = birthday - now;
 
     if(diff <= 0){
-        countdownBox.style.display = "none";
-        document.getElementById("home").style.display = "none";
+        countdownPage.style.display = "none";
         scenes.style.display = "block";
         waitingMusic.pause();
         mainMusic.play().catch(()=>{});
@@ -222,11 +287,19 @@ function updateCountdown() {
     const h = Math.floor(diff / 3600000) % 24;
     const m = Math.floor(diff / 60000) % 60;
     const s = Math.floor(diff / 1000) % 60;
-    countdownBox.innerText = `${d}j ${h}h ${m}m ${s}s`;
+    countdownTimer.textContent = `${d}j ${h}h ${m}m ${s}s`;
 }
 
-setInterval(updateCountdown,1000);
-updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ================= SCENES =================
+function nextScene(){
+    sceneEls[sceneIndex].classList.remove("active");
+    sceneIndex++;
+    if(sceneIndex < sceneEls.length){
+        sceneEls[sceneIndex].classList.add("active");
+    }
+}
 
 // ================= COEURS =================
 const heartsContainer = document.getElementById("hearts-container");
@@ -245,7 +318,6 @@ const heartMessages = [
 function createHearts(){
     heartsContainer.innerHTML = "";
     heartsEclates = 0;
-
     heartMessages.forEach(msg=>{
         const heart = document.createElement("div");
         heart.className = "heart";
@@ -277,29 +349,5 @@ function createHearts(){
     });
 }
 
-createHearts();
-
-// ================= FONCTION SCENES =================
-function nextScene(){
-    const sceneEls = document.querySelectorAll(".scene");
-    sceneEls[sceneIndex].classList.remove("active");
-    sceneIndex++;
-    if(sceneIndex < sceneEls.length){
-        sceneEls[sceneIndex].classList.add("active");
-    }
-}
-
 // ================= PETITS COEURS EN FOND =================
 function createBackgroundHearts(num=30){
-    for(let i=0;i<num;i++){
-        const h = document.createElement("div");
-        h.className = "background-heart";
-        h.style.left = Math.random()*100 + "vw";
-        h.style.animationDuration = (5+Math.random()*5)+"s";
-        document.body.appendChild(h);
-    }
-}
-createBackgroundHearts();
-</script>
-</body>
-</html>
