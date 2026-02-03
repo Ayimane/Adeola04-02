@@ -3,96 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <title>Un moment spécial 💙</title>
-
 <style>
-/* ================= RESET & BASE ================= */
-* { box-sizing: border-box; }
-
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background: radial-gradient(circle at top, #0b3c5d, #020b18);
-    color: white;
     overflow: hidden;
-}
-
-/* ================= UTILS ================= */
-.hidden { display: none; }
-
-.fade-in {
-    animation: fadeIn 1.8s ease forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ================= START OVERLAY (audio unlock) ================= */
-#startOverlay {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle, #0b3c5d, #020b18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    text-align: center;
-}
-
-#startOverlay button {
-    background: #1e90ff;
-    border: none;
     color: white;
-    padding: 18px 35px;
-    border-radius: 40px;
-    font-size: 18px;
-    cursor: pointer;
 }
 
 /* ================= COUNTDOWN ================= */
-#countdownPage {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
 #countdownBox {
-    max-width: 500px;
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 2em;
+    color: #ff5555;
+    text-shadow: 2px 2px #000;
+    z-index: 20;
 }
 
-#countdownTimer {
-    font-size: 2.2em;
-    margin-top: 15px;
-    letter-spacing: 2px;
+/* ================= PAGE ACCUEIL ================= */
+#home {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
 }
 
-/* ================= SCENES ================= */
-#scenes {
+#adeola {
+    font-size: 6em;
+    text-align: center;
+    color: #ff0000;
+    text-shadow: 3px 3px #000;
+    position: absolute;
+    top: 30%;
+    width: 100%;
+    z-index: 10;
+}
+
+.graffiti {
+    position: absolute;
+    font-size: 2em;
+    color: rgba(255,0,0,0.6);
+    transform: rotate(-30deg);
+    user-select: none;
+}
+
+/* ================= COEURS ================= */
+#hearts-container {
     position: absolute;
     inset: 0;
-}
-
-.scene {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
     pointer-events: none;
-    transition: opacity 1.2s ease;
 }
 
-.scene.active {
-    opacity: 1;
+.heart {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: red;
+    clip-path: polygon(
+      50% 0%, 61% 8%, 68% 18%, 70% 30%, 61% 38%, 50% 45%, 
+      39% 38%, 30% 30%, 32% 18%, 39% 8%
+    );
+    cursor: pointer;
     pointer-events: auto;
+    animation: fall linear infinite;
+    transition: transform 0.3s ease, opacity 0.5s ease;
 }
 
+@keyframes fall {
+    0% { transform: translateY(-50px) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(360deg); }
+}
+
+/* Animation pop + vibration */
+.pop {
+    animation: popAnim 0.5s forwards;
+}
+
+@keyframes popAnim {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    25% { transform: scale(1.3) rotate(-20deg); }
+    50% { transform: scale(0.8) rotate(20deg); }
+    75% { transform: scale(1.2) rotate(-10deg); }
+    100% { transform: scale(0) rotate(0deg); opacity: 0; }
+}
+
+/* ================= MESSAGE ================= */
+.msg {
+    position: absolute;
+    font-weight: bold;
+    color: #ff0000;
+    font-size: 1.2em;
+    text-shadow: 1px 1px #000;
+    pointer-events: none;
+}
+
+/* ================= MEDIA / AUDIO ================= */
 .media {
     max-width: 80%;
     max-height: 45vh;
@@ -100,28 +109,17 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.6);
     margin-bottom: 25px;
 }
-
-.scene p {
-    font-size: 1.3em;
-    text-align: center;
-    max-width: 700px;
-    line-height: 1.7;
-}
-
-.scene button {
-    margin-top: 30px;
-    background: #1e90ff;
-    border: none;
-    padding: 14px 35px;
-    border-radius: 30px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
 </style>
 </head>
-
 <body>
+
+<div id="countdownBox"></div>
+
+<div id="home">
+    <div id="adeola">ADEOLA 💙</div>
+</div>
+
+<div id="hearts-container"></div>
 
 <!-- ================= AUDIO ================= -->
 <audio id="waitingMusic" loop>
@@ -132,97 +130,17 @@ body {
     <source src="music/raindance.mp3" type="audio/mpeg">
 </audio>
 
-<!-- ================= START OVERLAY ================= -->
-<div id="startOverlay">
-    <div>
-        <h1>💙</h1>
-        <p>Touche l’écran pour commencer</p>
-        <button onclick="startExperience()">Commencer</button>
-    </div>
-</div>
-
-<!-- ================= COUNTDOWN ================= -->
-<div id="countdownPage" class="hidden">
-    <div id="countdownBox" class="fade-in">
-        <h1>Un moment spécial arrive… 💫</h1>
-        <p>Prépare-toi, Adé pense très fort à toi…</p>
-        <div id="countdownTimer"></div>
-    </div>
-</div>
-
-<!-- ================= SCENES ================= -->
-<div id="scenes" class="hidden">
-
-<div class="scene active">
-    <img class="media" src="media/scene1.jpg">
-    <p>Prête pour un voyage spécial ?<br><i>A journey written with love… luv u 💙</i></p>
-    <button onclick="nextScene()">Passer</button>
-</div>
-
-<div class="scene">
-    <img class="media" src="media/scene2.PNG">
-    <p>Parmi des millions de chemins,<br>Allah a voulu que les nôtres se croisent.<br><i>It was written.</i></p>
-    <button onclick="nextScene()">Passer</button>
-</div>
-
-<div class="scene">
-    <video class="media" src="media/scene3.mov" controls></video>
-    <p>Chaque souvenir est un trésor.<br><i>Memories that live forever.</i></p>
-    <button onclick="nextScene()">Passer</button>
-</div>
-
-<div class="scene">
-    <img class="media" src="media/scene4.mov">
-    <p>Mon affection pour toi est sincère.<br><i>I care about you more than words can say.</i></p>
-    <button onclick="nextScene()">Passer</button>
-</div>
-
-<div class="scene">
-    <img class="media" src="media/scene5.jpg">
-    <p>
-        Qu’Allah t’accorde une longue vie dans Son obéissance,<br>
-        qu’Il apaise ton cœur et illumine ton chemin.<br><br>
-        <b>Amine.</b><br>
-        <i>May Allah protect you always.</i><br><br>
-        — <b>Adéwalé 💙</b>
-    </p>
-</div>
-
-</div>
-
-<!-- ================= SCRIPT ================= -->
 <script>
+// ================= COUNTDOWN =================
 const birthday = new Date("2026-02-04T00:00:00");
-const params = new URLSearchParams(window.location.search);
-const bypass = params.get("bypass") === "true";
+const countdownBox = document.getElementById("countdownBox");
 
-const overlay = document.getElementById("startOverlay");
-const countdownPage = document.getElementById("countdownPage");
-const countdownTimer = document.getElementById("countdownTimer");
-const scenes = document.getElementById("scenes");
-
-const waitingMusic = document.getElementById("waitingMusic");
-const mainMusic = document.getElementById("mainMusic");
-
-let sceneIndex = 0;
-const sceneEls = document.querySelectorAll(".scene");
-
-function startExperience() {
-    overlay.style.display = "none";
-    waitingMusic.play().catch(()=>{});
-    countdownPage.classList.remove("hidden");
-    update();
-}
-
-function update() {
+function updateCountdown() {
     const now = new Date();
     const diff = birthday - now;
 
-    if (diff <= 0 || bypass) {
-        countdownPage.style.display = "none";
-        scenes.classList.remove("hidden");
-        waitingMusic.pause();
-        mainMusic.play().catch(()=>{});
+    if (diff <= 0) {
+        countdownBox.innerText = "✨ Aujourd'hui c'est le grand moment ! ✨";
         return;
     }
 
@@ -231,20 +149,68 @@ function update() {
     const m = Math.floor(diff / 60000) % 60;
     const s = Math.floor(diff / 1000) % 60;
 
-    countdownTimer.textContent = `${d}j ${h}h ${m}m ${s}s`;
+    countdownBox.innerText = `${d}j ${h}h ${m}m ${s}s`;
 }
 
-function nextScene() {
-    sceneEls[sceneIndex].classList.remove("active");
-    sceneIndex++;
-    if (sceneIndex < sceneEls.length) {
-        sceneEls[sceneIndex].classList.add("active");
-    }
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ================= GRAFFITI BABE =================
+const graffitiTexts = ["Babe","Babe","Babe","Babe","Babe"];
+graffitiTexts.forEach(text=>{
+    const div = document.createElement("div");
+    div.className = "graffiti";
+    div.innerText = text;
+    div.style.left = Math.random()*90 + "vw";
+    div.style.top = Math.random()*80 + "vh";
+    div.style.transform = `rotate(${Math.random()*60-30}deg)`;
+    div.style.fontSize = `${1.5 + Math.random()*2}em`;
+    document.getElementById("home").appendChild(div);
+});
+
+// ================= COEURS INTERACTIFS =================
+const heartsContainer = document.getElementById("hearts-container");
+const heartMessages = [
+    "je t'aime 💙","I love you 💙","我爱你 💙","愛してる 💙","Mo nifẹ rẹ 💙",
+    "Te amo 💙","Eu te amo 💙","أحبك 💙","· · · −−− ·−· ··· · · − · ·−·","मैं तुमसे प्यार करता हूँ 💙",
+    "Ich liebe dich 💙",
+    "bisou 😘","mon bébé 💖","bebeto la plus belle 💘","la princesse 👑",
+    "bambi","wifey","je t'aime gros comme le monde","luv u","tu es rayonnante",
+    "iyabo","akankè","Big mama","freshnini","Miss univers","my heart"
+];
+
+function createHearts(){
+    heartsContainer.innerHTML = "";
+    heartMessages.forEach(msg=>{
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.style.left = Math.random()*90 + "vw";
+        heart.style.animationDuration = (3+Math.random()*3)+"s";
+        heartsContainer.appendChild(heart);
+
+        heart.addEventListener("click", ()=>{
+            // créer le message
+            const messageDiv = document.createElement("div");
+            messageDiv.className = "msg";
+            messageDiv.innerText = msg;
+            messageDiv.style.left = heart.offsetLeft + "px";
+            messageDiv.style.top = heart.offsetTop + "px";
+            document.body.appendChild(messageDiv);
+
+            // effet pop
+            heart.classList.add("pop");
+
+            setTimeout(()=>heart.remove(),500);
+            setTimeout(()=>messageDiv.remove(),1000);
+
+            if(document.querySelectorAll(".heart").length === 0){
+                createHearts(); // recommence le jeu
+            }
+        });
+    });
 }
 
-setInterval(update, 1000);
+createHearts();
 </script>
-
 </body>
 </html>
-
