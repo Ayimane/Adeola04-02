@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Un moment spécial 💙</title>
 <style>
-/* =============== GENERAL =============== */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
@@ -13,7 +12,7 @@ body {
     color: white;
 }
 
-/* =============== COMPTE A REBOURS =============== */
+/* ================= COMPTE A REBOURS ================= */
 #countdownBox {
     position: absolute;
     top: 20px;
@@ -25,7 +24,7 @@ body {
     z-index: 20;
 }
 
-/* =============== PAGE ACCUEIL =============== */
+/* ================= PAGE ACCUEIL ================= */
 #home {
     position: relative;
     width: 100vw;
@@ -44,7 +43,7 @@ body {
     z-index: 10;
 }
 
-/* =============== COEURS =============== */
+/* ================= COEURS ================= */
 #hearts-container {
     position: absolute;
     inset: 0;
@@ -66,7 +65,6 @@ body {
     transition: transform 0.3s ease, top 2s linear;
 }
 
-/* Animation pop + vibration */
 .pop {
     animation: popAnim 0.5s forwards;
 }
@@ -79,7 +77,7 @@ body {
     100% { transform: scale(0) rotate(0deg); opacity: 0; }
 }
 
-/* =============== MESSAGE =============== */
+/* ================= MESSAGE ================= */
 .msg {
     position: absolute;
     font-weight: bold;
@@ -89,7 +87,7 @@ body {
     pointer-events: none;
 }
 
-/* =============== PETITS COEURS EN FOND =============== */
+/* ================= PETITS COEURS EN FOND ================= */
 .background-heart {
     position: absolute;
     width: 15px;
@@ -107,6 +105,50 @@ body {
     0% { transform: translateY(-20px) rotate(0deg); }
     100% { transform: translateY(100vh) rotate(360deg); }
 }
+
+/* ================= SCENES ================= */
+#scenes {
+    position: absolute;
+    inset: 0;
+    display: none;
+}
+
+.scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+    text-align: center;
+}
+
+.scene.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.scene img, .scene video {
+    max-width: 80%;
+    max-height: 45vh;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    margin-bottom: 20px;
+}
+
+.scene button {
+    margin-top: 20px;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 18px;
+    background: #ff5555;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -117,7 +159,7 @@ body {
 </div>
 <div id="hearts-container"></div>
 
-<!-- Musique -->
+<!-- ================= AUDIO ================= -->
 <audio id="waitingMusic" loop>
     <source src="music/beautiful-colors.mp3" type="audio/mpeg">
 </audio>
@@ -125,17 +167,54 @@ body {
     <source src="music/raindance.mp3" type="audio/mpeg">
 </audio>
 
+<!-- ================= SCENES ================= -->
+<div id="scenes">
+    <div class="scene active">
+        <img src="media/scene1.jpg">
+        <p>Prête pour un voyage spécial ? 💙</p>
+        <button onclick="nextScene()">Passer</button>
+    </div>
+    <div class="scene">
+        <video src="media/scene2.mov" controls></video>
+        <p>Parmi des millions de chemins, Allah a voulu que les nôtres se croisent.</p>
+        <button onclick="nextScene()">Passer</button>
+    </div>
+    <div class="scene">
+        <video src="media/scene3.mov" controls></video>
+        <p>Chaque souvenir est un trésor 💖</p>
+        <button onclick="nextScene()">Passer</button>
+    </div>
+    <div class="scene">
+        <img src="media/scene4.mov">
+        <p>Mon affection pour toi est sincère 💘</p>
+        <button onclick="nextScene()">Passer</button>
+    </div>
+    <div class="scene">
+        <img src="media/scene5.jpg">
+        <p>Qu’Allah t’accorde une longue vie et illumine ton chemin ✨</p>
+    </div>
+</div>
+
 <script>
 // ================= COMPTE A REBOURS =================
 const birthday = new Date("2026-02-04T00:00:00");
 const countdownBox = document.getElementById("countdownBox");
+const scenes = document.getElementById("scenes");
+const waitingMusic = document.getElementById("waitingMusic");
+const mainMusic = document.getElementById("mainMusic");
+
+let sceneIndex = 0;
 
 function updateCountdown() {
     const now = new Date();
     const diff = birthday - now;
 
-    if (diff <= 0) {
-        countdownBox.innerText = "✨ Aujourd'hui c'est le grand moment ! ✨";
+    if(diff <= 0){
+        countdownBox.style.display = "none";
+        document.getElementById("home").style.display = "none";
+        scenes.style.display = "block";
+        waitingMusic.pause();
+        mainMusic.play().catch(()=>{});
         return;
     }
 
@@ -143,26 +222,13 @@ function updateCountdown() {
     const h = Math.floor(diff / 3600000) % 24;
     const m = Math.floor(diff / 60000) % 60;
     const s = Math.floor(diff / 1000) % 60;
-
     countdownBox.innerText = `${d}j ${h}h ${m}m ${s}s`;
 }
 
-setInterval(updateCountdown, 1000);
+setInterval(updateCountdown,1000);
 updateCountdown();
 
-// ================= PETITS COEURS EN FOND =================
-function createBackgroundHearts(num=30){
-    for(let i=0;i<num;i++){
-        const h = document.createElement("div");
-        h.className = "background-heart";
-        h.style.left = Math.random()*100 + "vw";
-        h.style.animationDuration = (5+Math.random()*5)+"s";
-        document.body.appendChild(h);
-    }
-}
-createBackgroundHearts();
-
-// ================= COEURS INTERACTIFS =================
+// ================= COEURS =================
 const heartsContainer = document.getElementById("hearts-container");
 const totalHearts = 26;
 let heartsEclates = 0;
@@ -180,14 +246,13 @@ function createHearts(){
     heartsContainer.innerHTML = "";
     heartsEclates = 0;
 
-    heartMessages.forEach((msg)=>{
+    heartMessages.forEach(msg=>{
         const heart = document.createElement("div");
         heart.className = "heart";
         heart.style.left = Math.random()*90 + "vw";
-        heart.style.top = "-50px"; // départ en haut
+        heart.style.top = "-50px";
         heartsContainer.appendChild(heart);
 
-        // tomber jusqu'au bas
         const bottom = window.innerHeight - 50; 
         setTimeout(()=>heart.style.top = bottom + "px", 100 + Math.random()*1000);
 
@@ -213,6 +278,28 @@ function createHearts(){
 }
 
 createHearts();
+
+// ================= FONCTION SCENES =================
+function nextScene(){
+    const sceneEls = document.querySelectorAll(".scene");
+    sceneEls[sceneIndex].classList.remove("active");
+    sceneIndex++;
+    if(sceneIndex < sceneEls.length){
+        sceneEls[sceneIndex].classList.add("active");
+    }
+}
+
+// ================= PETITS COEURS EN FOND =================
+function createBackgroundHearts(num=30){
+    for(let i=0;i<num;i++){
+        const h = document.createElement("div");
+        h.className = "background-heart";
+        h.style.left = Math.random()*100 + "vw";
+        h.style.animationDuration = (5+Math.random()*5)+"s";
+        document.body.appendChild(h);
+    }
+}
+createBackgroundHearts();
 </script>
 </body>
 </html>
