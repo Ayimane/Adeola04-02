@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Un moment spécial 💙</title>
 <style>
+/* =============== GENERAL =============== */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
@@ -12,19 +13,19 @@ body {
     color: white;
 }
 
-/* ================= COUNTDOWN ================= */
+/* =============== COMPTE A REBOURS =============== */
 #countdownBox {
     position: absolute;
     top: 20px;
     width: 100%;
     text-align: center;
-    font-size: 2em;
+    font-size: 4em;
     color: #ff5555;
-    text-shadow: 2px 2px #000;
+    text-shadow: 3px 3px #000;
     z-index: 20;
 }
 
-/* ================= PAGE ACCUEIL ================= */
+/* =============== PAGE ACCUEIL =============== */
 #home {
     position: relative;
     width: 100vw;
@@ -33,29 +34,22 @@ body {
 }
 
 #adeola {
-    font-size: 6em;
+    font-size: 8em;
     text-align: center;
     color: #ff0000;
-    text-shadow: 3px 3px #000;
+    text-shadow: 4px 4px #000;
     position: absolute;
     top: 30%;
     width: 100%;
     z-index: 10;
 }
 
-.graffiti {
-    position: absolute;
-    font-size: 2em;
-    color: rgba(255,0,0,0.6);
-    transform: rotate(-30deg);
-    user-select: none;
-}
-
-/* ================= COEURS ================= */
+/* =============== COEURS =============== */
 #hearts-container {
     position: absolute;
     inset: 0;
     pointer-events: none;
+    z-index: 15;
 }
 
 .heart {
@@ -69,13 +63,7 @@ body {
     );
     cursor: pointer;
     pointer-events: auto;
-    animation: fall linear infinite;
-    transition: transform 0.3s ease, opacity 0.5s ease;
-}
-
-@keyframes fall {
-    0% { transform: translateY(-50px) rotate(0deg); }
-    100% { transform: translateY(100vh) rotate(360deg); }
+    transition: transform 0.3s ease, top 2s linear;
 }
 
 /* Animation pop + vibration */
@@ -91,7 +79,7 @@ body {
     100% { transform: scale(0) rotate(0deg); opacity: 0; }
 }
 
-/* ================= MESSAGE ================= */
+/* =============== MESSAGE =============== */
 .msg {
     position: absolute;
     font-weight: bold;
@@ -101,37 +89,44 @@ body {
     pointer-events: none;
 }
 
-/* ================= MEDIA / AUDIO ================= */
-.media {
-    max-width: 80%;
-    max-height: 45vh;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-    margin-bottom: 25px;
+/* =============== PETITS COEURS EN FOND =============== */
+.background-heart {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: red;
+    clip-path: polygon(
+      50% 0%, 61% 8%, 68% 18%, 70% 30%, 61% 38%, 50% 45%, 
+      39% 38%, 30% 30%, 32% 18%, 39% 8%
+    );
+    opacity: 0.6;
+    animation: floatDown linear infinite;
+}
+
+@keyframes floatDown {
+    0% { transform: translateY(-20px) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(360deg); }
 }
 </style>
 </head>
 <body>
 
 <div id="countdownBox"></div>
-
 <div id="home">
     <div id="adeola">ADEOLA 💙</div>
 </div>
-
 <div id="hearts-container"></div>
 
-<!-- ================= AUDIO ================= -->
+<!-- Musique -->
 <audio id="waitingMusic" loop>
     <source src="music/beautiful-colors.mp3" type="audio/mpeg">
 </audio>
-
 <audio id="mainMusic" loop>
     <source src="music/raindance.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-// ================= COUNTDOWN =================
+// ================= COMPTE A REBOURS =================
 const birthday = new Date("2026-02-04T00:00:00");
 const countdownBox = document.getElementById("countdownBox");
 
@@ -155,21 +150,23 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// ================= GRAFFITI BABE =================
-const graffitiTexts = ["Babe","Babe","Babe","Babe","Babe"];
-graffitiTexts.forEach(text=>{
-    const div = document.createElement("div");
-    div.className = "graffiti";
-    div.innerText = text;
-    div.style.left = Math.random()*90 + "vw";
-    div.style.top = Math.random()*80 + "vh";
-    div.style.transform = `rotate(${Math.random()*60-30}deg)`;
-    div.style.fontSize = `${1.5 + Math.random()*2}em`;
-    document.getElementById("home").appendChild(div);
-});
+// ================= PETITS COEURS EN FOND =================
+function createBackgroundHearts(num=30){
+    for(let i=0;i<num;i++){
+        const h = document.createElement("div");
+        h.className = "background-heart";
+        h.style.left = Math.random()*100 + "vw";
+        h.style.animationDuration = (5+Math.random()*5)+"s";
+        document.body.appendChild(h);
+    }
+}
+createBackgroundHearts();
 
 // ================= COEURS INTERACTIFS =================
 const heartsContainer = document.getElementById("hearts-container");
+const totalHearts = 26;
+let heartsEclates = 0;
+
 const heartMessages = [
     "je t'aime 💙","I love you 💙","我爱你 💙","愛してる 💙","Mo nifẹ rẹ 💙",
     "Te amo 💙","Eu te amo 💙","أحبك 💙","· · · −−− ·−· ··· · · − · ·−·","मैं तुमसे प्यार करता हूँ 💙",
@@ -181,15 +178,20 @@ const heartMessages = [
 
 function createHearts(){
     heartsContainer.innerHTML = "";
-    heartMessages.forEach(msg=>{
+    heartsEclates = 0;
+
+    heartMessages.forEach((msg)=>{
         const heart = document.createElement("div");
         heart.className = "heart";
         heart.style.left = Math.random()*90 + "vw";
-        heart.style.animationDuration = (3+Math.random()*3)+"s";
+        heart.style.top = "-50px"; // départ en haut
         heartsContainer.appendChild(heart);
 
+        // tomber jusqu'au bas
+        const bottom = window.innerHeight - 50; 
+        setTimeout(()=>heart.style.top = bottom + "px", 100 + Math.random()*1000);
+
         heart.addEventListener("click", ()=>{
-            // créer le message
             const messageDiv = document.createElement("div");
             messageDiv.className = "msg";
             messageDiv.innerText = msg;
@@ -197,14 +199,14 @@ function createHearts(){
             messageDiv.style.top = heart.offsetTop + "px";
             document.body.appendChild(messageDiv);
 
-            // effet pop
             heart.classList.add("pop");
-
             setTimeout(()=>heart.remove(),500);
             setTimeout(()=>messageDiv.remove(),1000);
 
-            if(document.querySelectorAll(".heart").length === 0){
-                createHearts(); // recommence le jeu
+            heartsEclates++;
+            if(heartsEclates === totalHearts){
+                alert("✨ Bravo ! Les 26 cœurs ont été éclatés ! ✨");
+                createHearts();
             }
         });
     });
